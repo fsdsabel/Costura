@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -8,7 +9,7 @@ static class ILTemplate
 
     static readonly Dictionary<string, string> assemblyNames = new Dictionary<string, string>();
     static readonly Dictionary<string, string> symbolNames = new Dictionary<string, string>();
-
+    
     public static void Attach()
     {
         var currentDomain = AppDomain.CurrentDomain;
@@ -17,9 +18,12 @@ static class ILTemplate
 
     public static Assembly ResolveAssembly(string assemblyName)
     {
-        if (nullCache.ContainsKey(assemblyName))
+        lock (((ICollection)nullCache).SyncRoot)
         {
-            return null;
+            if (nullCache.ContainsKey(assemblyName))
+            {
+                return null;
+            }
         }
 
         var requestedAssemblyName = new AssemblyName(assemblyName);
@@ -35,7 +39,13 @@ static class ILTemplate
         assembly = Common.ReadFromEmbeddedResources(assemblyNames, symbolNames, requestedAssemblyName);
         if (assembly == null)
         {
-            nullCache.Add(assemblyName, true);
+            lock (((ICollection)nullCache).SyncRoot)
+            {
+                if (!nullCache.ContainsKey(assemblyName))
+                {
+                    nullCache.Add(assemblyName, true);
+                }
+            }
 
             // Handles retargeted assemblies like PCL
             if (requestedAssemblyName.Flags == AssemblyNameFlags.Retargetable)
