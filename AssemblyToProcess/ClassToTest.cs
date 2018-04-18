@@ -1,53 +1,24 @@
 ﻿using System.Reflection;
-using System.Runtime.InteropServices;
 
 public class ClassToTest
 {
-    public string Foo()
+    static ClassToTest()
     {
-        return ClassToReference.Foo();
+        CosturaUtility.Initialize();
     }
-    public string InternationalFoo()
-    {
-        return ClassToReference.InternationalFoo();
-    }
-    public string Foo2()
-    {
-        return ClassToReference2.Foo();
-    }
-    public string ExeFoo()
-    {
-        return ExeClassToReference.Foo();
-    }
+
+    public string Simple() => ClassToReference.Simple();
+
+    public string InternationalFoo() => ClassToReference.InternationalFoo();
+
+    public string SimplePreEmbed() => ClassToReferencePreEmbedded.SimplePreEmbed();
+
+    public string Exe() => ExeClassToReference.Exe();
 
     public void ThrowException()
     {
         ClassToReference.ThrowException();
     }
 
-    [DllImport("AssemblyToReferenceNative")]
-    private static extern string SayHelloFromNative();
-
-    public string NativeFoo()
-    {
-        return SayHelloFromNative();
-    }
-
-    [DllImport("AssemblyToReferenceMixed")]
-    private static extern string SayHelloFromMixed();
-
-    public string MixedFooPInvoke()
-    {
-        return SayHelloFromMixed();
-    }
-
-    public string MixedFoo()
-    {
-        return ClassToReferenceMixed.Foo();
-    }
-
-    public Assembly GetReferencedAssembly()
-    {
-        return typeof(ClassToReference).Assembly;
-    }
+    public Assembly GetReferencedAssembly() => typeof(ClassToReference).Assembly;
 }

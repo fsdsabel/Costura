@@ -1,6 +1,8 @@
-﻿public class Program
+﻿public class ExeClassToReference
 {
-    private static void Main()
+    public static void Main()
     {
     }
+
+    public static string Exe() => "Hello";
 }
